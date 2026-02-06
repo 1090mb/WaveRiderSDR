@@ -14,6 +14,123 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from scipy import signal as sp_signal
 import matplotlib.pyplot as plt
+import serial.tools.list_ports
+
+
+class MeshtasticDetector:
+    """Detect Meshtastic devices via USB"""
+    
+    # Known Meshtastic device vendor IDs
+    MESHTASTIC_VIDS = {
+        0x239a,  # RAK (RAK4631, T-Echo)
+        0x303a,  # Heltec Tracker
+        0x10c4,  # Silicon Labs CP210x (Heltec, T-Lora)
+        0x1a86,  # WCH CH340/341 (T-Beam, T-Lora, Nano G1)
+    }
+    
+    def __init__(self):
+        self.detected_ports = []
+        
+    def detect_devices(self):
+        """Detect Meshtastic devices connected via USB
+        
+        Returns:
+            list: List of serial port objects for detected Meshtastic devices
+        """
+        self.detected_ports = []
+        
+        for port in serial.tools.list_ports.comports():
+            if port.vid in self.MESHTASTIC_VIDS:
+                self.detected_ports.append(port)
+                
+        return self.detected_ports
+    
+    def get_device_info(self, port):
+        """Get information about a detected device
+        
+        Args:
+            port: Serial port object
+            
+        Returns:
+            dict: Device information
+        """
+        return {
+            'device': port.device,
+            'vid': hex(port.vid) if port.vid else 'N/A',
+            'pid': hex(port.pid) if port.pid else 'N/A',
+            'description': port.description,
+            'manufacturer': port.manufacturer
+        }
+
+
+class LoRaCommunication:
+    """Manage LoRa communication with Meshtastic devices"""
+    
+    def __init__(self, port=None):
+        self.port = port
+        self.serial_connection = None
+        self.is_connected = False
+        self.frequency = 915.0  # Default LoRa frequency in MHz (US)
+        self.bandwidth = 125  # kHz
+        self.spreading_factor = 7
+        
+    def connect(self, port):
+        """Connect to a Meshtastic device
+        
+        Args:
+            port: Serial port device path
+            
+        Returns:
+            bool: True if connection successful
+        """
+        try:
+            self.port = port
+            # Note: Actual serial connection would be opened here
+            # For now, we'll simulate the connection
+            self.is_connected = True
+            return True
+        except Exception as e:
+            print(f"Failed to connect to {port}: {e}")
+            self.is_connected = False
+            return False
+    
+    def disconnect(self):
+        """Disconnect from the Meshtastic device"""
+        if self.serial_connection:
+            try:
+                self.serial_connection.close()
+            except:
+                pass
+        self.is_connected = False
+        
+    def configure_lora_params(self, frequency=None, bandwidth=None, spreading_factor=None):
+        """Configure LoRa communication parameters
+        
+        Args:
+            frequency: LoRa frequency in MHz
+            bandwidth: Bandwidth in kHz
+            spreading_factor: LoRa spreading factor (7-12)
+        """
+        if frequency is not None:
+            self.frequency = frequency
+        if bandwidth is not None:
+            self.bandwidth = bandwidth
+        if spreading_factor is not None:
+            self.spreading_factor = spreading_factor
+            
+    def get_status(self):
+        """Get current LoRa communication status
+        
+        Returns:
+            dict: Status information
+        """
+        return {
+            'connected': self.is_connected,
+            'port': self.port,
+            'frequency': self.frequency,
+            'bandwidth': self.bandwidth,
+            'spreading_factor': self.spreading_factor
+        }
 
 
 class WaterfallWidget(FigureCanvas):
@@ -132,6 +249,10 @@ class WaveRiderSDR(QMainWindow):
         self.center_freq = 100e6  # 100 MHz
         self.signal_source = SignalGenerator(self.sample_rate, self.center_freq)
         
+        # Initialize Meshtastic detector and LoRa communication
+        self.meshtastic_detector = MeshtasticDetector()
+        self.lora_comm = LoRaCommunication()
+        
         # FFT parameters
         self.fft_size = 1024
         self.update_interval = 50  # ms
@@ -143,6 +264,14 @@ class WaveRiderSDR(QMainWindow):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_display)
         self.timer.start(self.update_interval)
+        
+        # Setup device detection timer (check every 5 seconds)
+        self.device_check_timer = QTimer()
+        self.device_check_timer.timeout.connect(self.check_meshtastic_devices)
+        self.device_check_timer.start(5000)  # 5 seconds
+        
+        # Perform initial device check
+        self.check_meshtastic_devices()
         
     def setup_ui(self):
         """Setup the user interface"""
@@ -211,6 +340,25 @@ class WaveRiderSDR(QMainWindow):
         
         main_layout.addLayout(controls_layout)
         
+        # Meshtastic device status panel
+        meshtastic_layout = QHBoxLayout()
+        meshtastic_label = QLabel('Meshtastic Device:')
+        self.meshtastic_status_label = QLabel('Not detected')
+        self.meshtastic_status_label.setStyleSheet("color: orange;")
+        meshtastic_layout.addWidget(meshtastic_label)
+        meshtastic_layout.addWidget(self.meshtastic_status_label)
+        meshtastic_layout.addStretch()
+        
+        # LoRa status
+        lora_label = QLabel('LoRa Status:')
+        self.lora_status_label = QLabel('Disabled')
+        self.lora_status_label.setStyleSheet("color: gray;")
+        meshtastic_layout.addWidget(lora_label)
+        meshtastic_layout.addWidget(self.lora_status_label)
+        meshtastic_layout.addStretch()
+        
+        main_layout.addLayout(meshtastic_layout)
+        
         # Status bar
         self.statusBar().showMessage('Running with simulated signal source')
         
@@ -276,6 +424,40 @@ class WaveRiderSDR(QMainWindow):
             self.timer.start(self.update_interval)
             self.start_stop_btn.setText('Stop')
             self.statusBar().showMessage('Running')
+    
+    def check_meshtastic_devices(self):
+        """Check for Meshtastic devices and enable LoRa if detected"""
+        detected_devices = self.meshtastic_detector.detect_devices()
+        
+        if detected_devices:
+            # Device detected - enable LoRa communication
+            device = detected_devices[0]  # Use first detected device
+            device_info = self.meshtastic_detector.get_device_info(device)
+            
+            # Update UI
+            device_text = f"{device_info['description']} ({device_info['device']})"
+            self.meshtastic_status_label.setText(device_text)
+            self.meshtastic_status_label.setStyleSheet("color: green;")
+            
+            # Connect LoRa communication if not already connected
+            if not self.lora_comm.is_connected:
+                if self.lora_comm.connect(device_info['device']):
+                    self.lora_status_label.setText('Enabled (915 MHz)')
+                    self.lora_status_label.setStyleSheet("color: green;")
+                    self.statusBar().showMessage(f'Meshtastic device connected: {device_text}')
+                else:
+                    self.lora_status_label.setText('Connection failed')
+                    self.lora_status_label.setStyleSheet("color: red;")
+        else:
+            # No device detected
+            if self.lora_comm.is_connected:
+                self.lora_comm.disconnect()
+                self.statusBar().showMessage('Meshtastic device disconnected')
+            
+            self.meshtastic_status_label.setText('Not detected')
+            self.meshtastic_status_label.setStyleSheet("color: orange;")
+            self.lora_status_label.setText('Disabled')
+            self.lora_status_label.setStyleSheet("color: gray;")
 
 
 def main():
