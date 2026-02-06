@@ -1,13 +1,36 @@
 # WaveRiderSDR
-The only SDR with full features and rolling updates.
+The only SDR with full features, rolling updates, and **universal cross-platform compatibility**.
+
+## 🌍 Cross-Platform Support
+
+WaveRider SDR works on **every type of computer and phone**:
+
+### Desktop Platforms
+- ✅ **Windows** (7, 8, 10, 11)
+- ✅ **macOS** (10.14+)
+- ✅ **Linux** (Ubuntu, Debian, Fedora, Arch, etc.)
+
+### Mobile Platforms
+- ✅ **iOS** (iPhone, iPad via web browser)
+- ✅ **Android** (phones and tablets via web browser)
+
+### How It Works
+WaveRider SDR provides **two versions**:
+1. **Desktop Application** - Native PyQt5 GUI for desktop computers
+2. **Web Interface** - Browser-based interface for phones, tablets, and any device
+
+The universal launcher (`run.py`) automatically detects your platform and starts the appropriate version!
 
 ## Features
 
+- **Universal Cross-Platform**: Works on Windows, macOS, Linux, iOS, Android, and any device with a web browser
+- **Automatic Platform Detection**: Intelligently chooses the best interface for your device
+- **Responsive Design**: Adapts to any screen size - from phones to desktop monitors
 - **Waterfall Display (Spectrogram)**: Real-time visualization of frequency spectrum over time
 - **Interactive Controls**: Adjust center frequency, sample rate, FFT size, and update rate
 - **Signal Processing**: FFT-based frequency analysis with windowing
 - **Flexible Display**: Colormap-based visualization for easy signal identification
-- **Cross-platform**: Works on Linux, macOS, and Windows
+- **Mobile-Optimized**: Touch-friendly controls and optimized layouts for phones and tablets
 - **Meshtastic Device Detection**: Automatic detection of Meshtastic devices via USB
 - **LoRa Communication**: Enables LoRa communication when Meshtastic device is detected
 
@@ -17,20 +40,102 @@ The only SDR with full features and rolling updates.
 
 - Python 3.7 or higher
 - pip package manager
+- Internet connection (for initial dependency installation)
 
-### Install Dependencies
+### Quick Start (Recommended)
+
+The easiest way to run WaveRider SDR on **any platform**:
 
 ```bash
+# Install core dependencies
 pip install -r requirements.txt
+
+# Run the universal launcher (auto-detects your platform)
+python run.py
 ```
+
+The launcher will:
+1. Detect your operating system and capabilities
+2. Check for required dependencies
+3. Offer to install any missing dependencies
+4. Launch the appropriate version for your device
+
+### Manual Installation
+
+If you prefer to manually choose which version to install:
+
+#### For Desktop (Windows, macOS, Linux with GUI):
+
+```bash
+# Install desktop dependencies
+pip install numpy matplotlib scipy PyQt5 pyserial
+
+# Run desktop version
+python waverider_sdr.py
+```
+
+#### For Web/Mobile (Any device with a browser):
+
+```bash
+# Install web dependencies  
+pip install numpy matplotlib scipy flask flask-socketio pyserial
+
+# Run web version
+python waverider_web.py
+```
+
+Then open your web browser and navigate to:
+- On the same device: `http://localhost:5000`
+- From other devices (phones, tablets): `http://<your-ip-address>:5000`
+
+### Finding Your IP Address
+
+**Windows**: `ipconfig` in Command Prompt  
+**macOS/Linux**: `ifconfig` or `ip addr` in Terminal  
+**Look for**: IPv4 address (usually starts with 192.168.x.x or 10.x.x.x)
 
 ## Usage
 
-### Running the Application
+### Running with Universal Launcher (Recommended)
+
+```bash
+python run.py
+```
+
+The launcher supports optional flags:
+- `python run.py --web` or `python run.py -w` - Force web version
+- `python run.py --desktop` or `python run.py -d` - Force desktop version
+- `python run.py --help` or `python run.py -h` - Show help
+
+### Running Specific Versions
+
+#### Desktop Application:
 
 ```bash
 python waverider_sdr.py
 ```
+
+#### Web Interface:
+
+```bash
+python waverider_web.py
+```
+
+### Accessing on Mobile Devices
+
+1. Start the web version on your computer:
+   ```bash
+   python waverider_web.py
+   ```
+
+2. Find your computer's IP address (e.g., 192.168.1.100)
+
+3. On your phone/tablet browser, navigate to:
+   ```
+   http://192.168.1.100:5000
+   ```
+
+4. Bookmark the page for easy access!
 
 ### Controls
 
@@ -87,6 +192,45 @@ Currently, the application uses a simulated signal generator that creates:
 - Background noise
 
 This allows you to see the waterfall visualization in action without requiring actual SDR hardware.
+
+## Platform Compatibility Matrix
+
+| Platform | Desktop Version | Web Version | Notes |
+|----------|----------------|-------------|-------|
+| **Windows 7+** | ✅ Full Support | ✅ Full Support | Both Qt and web versions work |
+| **macOS 10.14+** | ✅ Full Support | ✅ Full Support | Both Qt and web versions work |
+| **Linux (Ubuntu, Debian, etc.)** | ✅ Full Support | ✅ Full Support | Both versions supported |
+| **Linux (Server/Headless)** | ❌ No Display | ✅ Full Support | Web version recommended |
+| **iOS (iPhone/iPad)** | ❌ No Qt Support | ✅ Full Support | Use web version via Safari/Chrome |
+| **Android (Phones/Tablets)** | ❌ No Qt Support | ✅ Full Support | Use web version via any browser |
+| **Raspberry Pi** | ⚠️ Limited | ✅ Full Support | Web version recommended |
+| **Chromebook** | ❌ No Qt Support | ✅ Full Support | Web version only |
+
+### Browser Compatibility (Web Version)
+
+The web interface works with modern browsers on any device:
+- ✅ Chrome/Chromium (Desktop & Mobile)
+- ✅ Firefox (Desktop & Mobile)  
+- ✅ Safari (macOS & iOS)
+- ✅ Edge (Windows)
+- ✅ Samsung Internet (Android)
+- ✅ Opera (All platforms)
+
+**Minimum Requirements:**
+- HTML5 support
+- WebSocket support
+- JavaScript enabled
+
+### Network Configuration for Mobile Access
+
+To access WaveRider SDR from mobile devices:
+
+1. **Same WiFi Network**: Ensure both the computer running the server and your mobile device are on the same WiFi network
+2. **Firewall**: Allow port 5000 through your firewall
+   - **Windows**: `netsh advfirewall firewall add rule name="WaveRider SDR" dir=in action=allow protocol=TCP localport=5000`
+   - **macOS**: System Preferences → Security & Privacy → Firewall → Firewall Options → Add application
+   - **Linux**: `sudo ufw allow 5000/tcp` (for UFW) or configure iptables
+3. **Router**: Some routers may require port forwarding for external access
 
 ## Future Enhancements
 

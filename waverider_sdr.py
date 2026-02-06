@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 WaveRiderSDR - Software Defined Radio with Waterfall Visualization
 Main application entry point
