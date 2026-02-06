@@ -6,6 +6,8 @@ Main application entry point
 
 import sys
 import numpy as np
+import matplotlib.pyplot as plt
+import serial.tools.list_ports
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QSlider, 
                              QComboBox, QSpinBox, QDoubleSpinBox)
@@ -13,8 +15,6 @@ from PyQt5.QtCore import QTimer, Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from scipy import signal as sp_signal
-import matplotlib.pyplot as plt
-import serial.tools.list_ports
 
 
 class MeshtasticDetector:
@@ -99,7 +99,7 @@ class LoRaCommunication:
         if self.serial_connection:
             try:
                 self.serial_connection.close()
-            except:
+            except Exception:
                 pass
         self.is_connected = False
         
