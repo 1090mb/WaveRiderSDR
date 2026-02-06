@@ -8,6 +8,8 @@ The only SDR with full features and rolling updates.
 - **Signal Processing**: FFT-based frequency analysis with windowing
 - **Flexible Display**: Colormap-based visualization for easy signal identification
 - **Cross-platform**: Works on Linux, macOS, and Windows
+- **Meshtastic Device Detection**: Automatic detection of Meshtastic devices via USB
+- **LoRa Communication**: Enables LoRa communication when Meshtastic device is detected
 
 ## Installation
 
@@ -39,6 +41,15 @@ The application provides the following controls:
 - **FFT Size**: Choose the FFT size for frequency resolution (512, 1024, 2048, 4096)
 - **Update Rate**: Set the display refresh rate in milliseconds
 - **Start/Stop**: Toggle signal acquisition on and off
+
+### Meshtastic Device Status
+
+The application displays real-time status information about Meshtastic devices:
+
+- **Meshtastic Device**: Shows whether a Meshtastic device is detected and connected
+- **LoRa Status**: Indicates if LoRa communication is enabled
+  - When a Meshtastic device is detected, LoRa communication is automatically enabled at 915 MHz
+  - Supported devices include RAK4631, T-Echo, Heltec Tracker, T-Beam, T-Lora, and more
 
 ### Waterfall Display
 
@@ -84,6 +95,8 @@ This allows you to see the waterfall visualization in action without requiring a
 - Signal demodulation
 - Frequency bookmarks
 - Adjustable colormap and dynamic range
+- Advanced LoRa packet capture and analysis
+- Meshtastic message monitoring and transmission
 
 ## License
 
