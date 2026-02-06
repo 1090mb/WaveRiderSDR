@@ -248,11 +248,31 @@ The web interface works with modern browsers on any device:
 To access WaveRider SDR from mobile devices:
 
 1. **Same WiFi Network**: Ensure both the computer running the server and your mobile device are on the same WiFi network
-2. **Firewall**: Allow port 5000 through your firewall
-   - **Windows**: `netsh advfirewall firewall add rule name="WaveRider SDR" dir=in action=allow protocol=TCP localport=5000`
-   - **macOS**: System Preferences → Security & Privacy → Firewall → Firewall Options → Add application
-   - **Linux**: `sudo ufw allow 5000/tcp` (for UFW) or configure iptables
-3. **Router**: Some routers may require port forwarding for external access
+
+2. **Firewall Configuration**: Allow port 5000 through your firewall (restrict to local network for security)
+   
+   **Windows** (restrict to local network):
+   ```powershell
+   netsh advfirewall firewall add rule name="WaveRider SDR" dir=in action=allow protocol=TCP localport=5000 remoteip=localsubnet
+   ```
+   
+   **macOS**: System Preferences → Security & Privacy → Firewall → Firewall Options → Add Python application
+   
+   **Linux** (UFW - restrict to local network):
+   ```bash
+   sudo ufw allow from 192.168.0.0/16 to any port 5000 proto tcp
+   sudo ufw allow from 10.0.0.0/8 to any port 5000 proto tcp
+   ```
+
+3. **Router**: Keep the service on your local network only. Do not expose port 5000 to the internet without proper authentication and HTTPS.
+
+### 🔒 Security Best Practices
+
+- **Local Network Only**: By default, the web server binds to all interfaces (0.0.0.0) to allow mobile access. This is safe on trusted local networks.
+- **Firewall Rules**: Use the firewall rules above that restrict access to local network ranges (192.168.x.x, 10.x.x.x)
+- **No Public Exposure**: Do not forward port 5000 through your router unless you add authentication and HTTPS
+- **Trusted Networks**: Only run on trusted WiFi networks, not public WiFi
+- **Local-Only Mode**: For localhost-only access (no mobile), edit `waverider_web.py` to use `host='127.0.0.1'`
 
 ## Future Enhancements
 

@@ -166,9 +166,10 @@ def main():
         elif arg in ['--help', '-h']:
             print("\nUsage: python run.py [OPTIONS]")
             print("\nOptions:")
-            print("  --web, -w       Force web version")
-            print("  --desktop, -d   Force desktop version")
-            print("  --help, -h      Show this help message")
+            print("  --web, -w          Force web version")
+            print("  --desktop, -d      Force desktop version")
+            print("  --auto-install     Automatically install missing dependencies (no prompt)")
+            print("  --help, -h         Show this help message")
             sys.exit(0)
     
     # Auto-detect if not specified
@@ -195,8 +196,10 @@ def main():
     
     if missing:
         print(f"\nMissing dependencies: {', '.join(missing)}")
-        response = input("Would you like to install them now? (y/n): ")
-        if response.lower() in ['y', 'yes']:
+        
+        # Check if running in non-interactive environment
+        if not sys.stdin.isatty() or '--auto-install' in sys.argv:
+            print("Auto-installing dependencies...")
             if install_dependencies(missing):
                 print("Dependencies installed successfully!")
             else:
@@ -204,8 +207,17 @@ def main():
                 print("Please install manually: pip install " + " ".join(missing))
                 sys.exit(1)
         else:
-            print("Cannot continue without required dependencies.")
-            sys.exit(1)
+            response = input("Would you like to install them now? (y/n): ")
+            if response.lower() in ['y', 'yes']:
+                if install_dependencies(missing):
+                    print("Dependencies installed successfully!")
+                else:
+                    print("Failed to install dependencies.")
+                    print("Please install manually: pip install " + " ".join(missing))
+                    sys.exit(1)
+            else:
+                print("Cannot continue without required dependencies.")
+                sys.exit(1)
     else:
         print("All dependencies satisfied!")
     

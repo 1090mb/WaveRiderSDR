@@ -95,7 +95,9 @@ class WaveRiderWebApp:
     
     def __init__(self):
         self.app = Flask(__name__)
-        self.app.config['SECRET_KEY'] = 'waverider-sdr-secret-key'
+        # Generate a random secret key for session security
+        import secrets
+        self.app.config['SECRET_KEY'] = secrets.token_hex(32)
         self.socketio = SocketIO(self.app, cors_allowed_origins="*")
         
         # Signal processing parameters
@@ -154,9 +156,12 @@ class WaveRiderWebApp:
         @self.socketio.on('start')
         def handle_start():
             """Start signal acquisition"""
-            self.running = True
-            threading.Thread(target=self.update_loop, daemon=True).start()
-            emit('status', {'message': 'Started'})
+            if not self.running:
+                self.running = True
+                threading.Thread(target=self.update_loop, daemon=True).start()
+                emit('status', {'message': 'Started'})
+            else:
+                emit('status', {'message': 'Already running'})
             
         @self.socketio.on('stop')
         def handle_stop():
@@ -278,8 +283,23 @@ class WaveRiderWebApp:
             return buf.getvalue()
     
     def run(self, host='0.0.0.0', port=5000, debug=False):
-        """Run the web application"""
+        """Run the web application
+        
+        Args:
+            host: Host to bind to. Use '0.0.0.0' for all interfaces (mobile access),
+                  or '127.0.0.1' for localhost only (more secure)
+            port: Port to listen on
+            debug: Enable debug mode
+        """
         print(f"Starting WaveRider SDR Web Interface on http://{host}:{port}")
+        
+        if host == '0.0.0.0':
+            print("\n⚠️  SECURITY NOTICE:")
+            print("   Binding to 0.0.0.0 allows connections from any device on your network.")
+            print("   This is required for mobile device access but less secure.")
+            print("   For localhost-only access, use: app.run(host='127.0.0.1')")
+            print("   Consider using firewall rules to restrict access to trusted devices.\n")
+        
         print("Access from any device (computer or phone) using a web browser")
         self.socketio.run(self.app, host=host, port=port, debug=debug)
 
