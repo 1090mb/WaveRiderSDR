@@ -390,8 +390,7 @@ if PYQT5_AVAILABLE:
                 self.statusBar().showMessage(f'Found {len(devices)} SDR device(s). Select a device and click Start.')
                 
                 # Auto-select first device
-                if len(devices) > 0:
-                    self.on_sdr_device_changed(0)
+                self.on_sdr_device_changed(0)
             else:
                 # No devices found
                 self.sdr_combo.addItem('No SDR devices found')

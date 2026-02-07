@@ -106,25 +106,6 @@ WaveRider SDR supports real SDR hardware for live signal acquisition:
 5. Select your device from the dropdown menu
 6. Click "Start" to begin signal acquisition
 
-## Features
-
-- **Real SDR Hardware Support**: Connect to RTL-SDR and other SDR devices for real-time signal acquisition
-- **Automatic Device Detection**: Scans and displays available SDR devices
-- **Device Selection**: Choose which SDR device to use from detected devices
-- **Start/Stop Controls**: Start and stop signal acquisition with a single button
-- **Real-Time Display**: Live waterfall and waveform visualization from SDR hardware
-- **Graceful Fallback**: Works with simulated signals when no SDR hardware is present
-- **Universal Cross-Platform**: Works on Windows, macOS, Linux, iOS, Android, and any device with a web browser
-- **Automatic Platform Detection**: Intelligently chooses the best interface for your device
-- **Responsive Design**: Adapts to any screen size - from phones to desktop monitors
-- **Waterfall Display (Spectrogram)**: Real-time visualization of frequency spectrum over time
-- **Interactive Controls**: Adjust center frequency, sample rate, FFT size, and update rate
-- **Signal Processing**: FFT-based frequency analysis with windowing
-- **Flexible Display**: Colormap-based visualization for easy signal identification
-- **Mobile-Optimized**: Touch-friendly controls and optimized layouts for phones and tablets
-- **Meshtastic Device Detection**: Automatic detection of Meshtastic devices via USB
-- **LoRa Communication**: Enables LoRa communication when Meshtastic device is detected
-
 ## Installation
 
 ### Requirements
