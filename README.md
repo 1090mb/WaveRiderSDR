@@ -3,7 +3,7 @@ The only SDR with full features, rolling updates, and **universal cross-platform
 
 ## 🎯 Features
 
-- **Real SDR Hardware Support**: Connect to RTL-SDR and other SDR devices for real-time signal acquisition
+- **Real SDR Hardware Support**: Connect to RTL-SDR and HackRF devices for real-time signal acquisition
 - **Automatic Device Detection**: Scans and displays available SDR devices
 - **Device Selection**: Choose which SDR device to use from detected devices
 - **Start/Stop Controls**: Start and stop signal acquisition with a single button
@@ -20,6 +20,8 @@ The only SDR with full features, rolling updates, and **universal cross-platform
 - **Mobile-Optimized**: Touch-friendly controls and optimized layouts for phones and tablets
 - **Meshtastic Device Detection**: Automatic detection of Meshtastic devices via USB
 - **LoRa Communication**: Enables LoRa communication when Meshtastic device is detected
+- **🆕 Multiple Modulation Modes**: Support for AM, FM, USB, LSB, and CW (Morse code) demodulation
+- **🆕 Morse Code Decoder**: Real-time Morse code (CW) detection and text display
 
 ## 🚀 Quick Start
 
@@ -89,7 +91,7 @@ WaveRider SDR supports real SDR hardware for live signal acquisition:
 
 ### Supported Devices
 - **RTL-SDR** (RTL2832U-based dongles)
-- More devices coming soon (HackRF, Airspy, etc.)
+- **HackRF** (HackRF One and compatible devices via SoapySDR)
 
 ### Features
 - **Automatic Device Detection**: Scans for connected SDR devices on startup
@@ -97,14 +99,68 @@ WaveRider SDR supports real SDR hardware for live signal acquisition:
 - **Real-Time Acquisition**: Live signal processing and display
 - **Start/Stop Control**: Start and stop signal acquisition as needed
 - **Graceful Fallback**: Automatically uses simulated signals if no hardware is detected
+- **Multiple Modulation Modes**: Demodulate AM, FM, USB, LSB, and CW signals
+- **Morse Code Decoder**: Automatically decode Morse code (CW) transmissions
 
 ### Setup
-1. Install SDR driver for your device (e.g., RTL-SDR driver)
-2. Install Python SDR library: `pip install pyrtlsdr`
-3. Connect your SDR device
+
+#### RTL-SDR Setup
+1. Install RTL-SDR driver for your device
+2. Install Python RTL-SDR library: `pip install pyrtlsdr`
+3. Connect your RTL-SDR device
 4. Run WaveRider SDR - it will automatically detect your device
 5. Select your device from the dropdown menu
 6. Click "Start" to begin signal acquisition
+
+#### HackRF Setup
+HackRF support is provided through SoapySDR. You'll need to install SoapySDR at the system level:
+
+**Ubuntu/Debian:**
+```bash
+sudo apt-get install python3-soapysdr soapysdr-module-hackrf
+```
+
+**macOS:**
+```bash
+brew install soapysdr hackrf
+```
+
+**Windows:**
+- Download and install SoapySDR from: https://github.com/pothosware/SoapySDR/wiki
+- Download and install HackRF drivers from: https://github.com/greatscottgadgets/hackrf
+
+After installing SoapySDR:
+1. Connect your HackRF device
+2. Run WaveRider SDR - it will automatically detect your HackRF
+3. Select your HackRF device from the dropdown menu
+4. Click "Start" to begin signal acquisition
+
+### Using Modulation Modes
+
+WaveRider SDR supports multiple demodulation modes:
+
+1. **None**: Raw IQ samples (no demodulation)
+2. **AM**: Amplitude Modulation - for AM broadcast, aviation, amateur radio
+3. **FM**: Frequency Modulation - for FM broadcast, NOAA weather, 2-meter ham radio
+4. **USB**: Upper Sideband - for SSB amateur radio, shortwave communications
+5. **LSB**: Lower Sideband - for SSB amateur radio, shortwave communications
+6. **CW**: Continuous Wave (Morse code) - for CW amateur radio transmissions
+
+To use demodulation:
+1. Select the desired modulation mode from the "Modulation" dropdown
+2. The signal will be automatically demodulated in real-time
+3. For CW mode, enable the Morse decoder to see decoded text
+
+### Using the Morse Code Decoder
+
+The Morse code decoder automatically translates CW (Continuous Wave) transmissions into text:
+
+1. Select "CW (Morse)" from the Modulation dropdown
+2. Click "Enable Morse Decoder" button
+3. Tune to a frequency with Morse code transmissions
+4. Decoded text will appear in real-time in the Morse display area
+5. The decoder supports standard International Morse Code
+6. Click "Disable Morse Decoder" to stop decoding
 
 ## Installation
 
