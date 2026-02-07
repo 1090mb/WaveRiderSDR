@@ -61,7 +61,7 @@ setup(
     # Dependencies
     install_requires=requirements,
     extras_require=extras_require,
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     
     # Entry points for command-line scripts
     entry_points={
@@ -81,7 +81,6 @@ setup(
         'Topic :: Scientific/Engineering',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',

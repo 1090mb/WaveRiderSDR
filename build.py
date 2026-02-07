@@ -151,7 +151,7 @@ exe = EXE(
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    console={'True' if system != 'Windows' else 'False'},
+    console={True if system != 'Windows' else False},
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
@@ -424,4 +424,6 @@ if __name__ == '__main__':
         sys.exit(1)
     except Exception as e:
         print_error(f"Build failed with error: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)

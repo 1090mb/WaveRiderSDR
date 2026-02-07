@@ -174,11 +174,11 @@ if /i "%CREATE_SHORTCUT%"=="y" (
 :configure_firewall
 echo.
 if "%IS_ADMIN%"=="1" (
-    set /p CONFIG_FIREWALL="Would you like to configure Windows Firewall for mobile access? (y/n): "
+    set /p CONFIG_FIREWALL="Would you like to configure Windows Firewall for local network mobile access (restricted to local subnet)? (y/n): "
     if /i "!CONFIG_FIREWALL!"=="y" (
         echo.
-        echo [*] Configuring Windows Firewall...
-        netsh advfirewall firewall add rule name="WaveRider SDR" dir=in action=allow protocol=TCP localport=5000 remoteip=localsubnet
+        echo [*] Configuring Windows Firewall (local network only)...
+        netsh advfirewall firewall add rule name="WaveRider SDR" dir=in action=allow protocol=TCP localport=5000 remoteip=localsubnet profile=private
         if %errorlevel% == 0 (
             echo [OK] Firewall rule added successfully
         ) else (

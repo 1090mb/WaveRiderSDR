@@ -5,7 +5,7 @@
 ### Universal Cross-Platform Software Defined Radio
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)](https://github.com/1090mb/WaveRiderSDR)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/1090mb/WaveRiderSDR/pulls)
 
@@ -207,7 +207,7 @@ curl -fsSL https://raw.githubusercontent.com/1090mb/WaveRiderSDR/main/install.sh
 
 **Requirements:**
 - macOS 10.14 (Mojave) or later
-- Python 3.7+ (Install via [python.org](https://www.python.org/downloads/) or `brew install python3`)
+- Python 3.8+ (Install via [python.org](https://www.python.org/downloads/) or `brew install python3`)
 
 </details>
 
@@ -244,7 +244,7 @@ install.bat
 
 **Requirements:**
 - Windows 7 or later (Windows 10/11 recommended)
-- Python 3.7+ (Install from [python.org](https://www.python.org/downloads/) - check "Add Python to PATH"!)
+- Python 3.8+ (Install from [python.org](https://www.python.org/downloads/) - check "Add Python to PATH"!)
 
 </details>
 

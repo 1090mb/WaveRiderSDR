@@ -13,7 +13,9 @@ curl -fsSL https://raw.githubusercontent.com/1090mb/WaveRiderSDR/main/install.sh
 
 **Windows PowerShell:**
 ```powershell
-iwr https://raw.githubusercontent.com/1090mb/WaveRiderSDR/main/install.ps1 -UseBasicParsing | iex
+# Download and run with review opportunity
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/1090mb/WaveRiderSDR/main/install.ps1" -OutFile "install.ps1"
+powershell -ExecutionPolicy Bypass -File install.ps1
 ```
 
 ### Option 2: Quick Manual Install

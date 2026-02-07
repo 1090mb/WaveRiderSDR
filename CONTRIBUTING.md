@@ -86,7 +86,7 @@ We actively welcome your pull requests:
 
 ### Prerequisites
 
-- Python 3.7 or higher
+- Python 3.8 or higher
 - pip package manager
 - Git
 

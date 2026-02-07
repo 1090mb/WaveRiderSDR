@@ -193,17 +193,17 @@ function Add-FirewallRule {
         
         try {
             # Remove old rule if exists
-            netsh advfirewall firewall delete rule name="WaveRider SDR" 2>$null
+            $null = netsh advfirewall firewall delete rule name="WaveRider SDR" 2>&1
             
             # Add new rule restricted to local subnet
-            netsh advfirewall firewall add rule `
+            $result = netsh advfirewall firewall add rule `
                 name="WaveRider SDR" `
                 dir=in `
                 action=allow `
                 protocol=TCP `
                 localport=5000 `
                 remoteip=localsubnet `
-                profile=private
+                profile=private 2>&1
             
             if ($LASTEXITCODE -eq 0) {
                 Write-Success "Firewall rule added (restricted to local network)"
