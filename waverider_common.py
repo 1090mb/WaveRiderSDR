@@ -115,8 +115,8 @@ class LoRaCommunication:
         if self.serial_connection:
             try:
                 self.serial_connection.close()
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"Warning: Error while disconnecting from serial port: {e}")
         self.is_connected = False
         
     def configure_lora_params(self, frequency=None, bandwidth=None, spreading_factor=None):
