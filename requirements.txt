@@ -1,3 +1,7 @@
+# WaveRider SDR - Python Dependencies
+# Requires Python 3.8 or higher
+
+# Core dependencies (required)
 numpy>=1.21.0
 matplotlib>=3.4.0
 scipy>=1.7.0
