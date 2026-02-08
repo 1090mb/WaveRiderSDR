@@ -310,6 +310,68 @@
                 </select>
             </div>
             
+            <div class="control-group">
+                <label for="modulation">Modulation</label>
+                <select id="modulation">
+                    <option value="FM" selected>FM (Frequency)</option>
+                    <option value="AM">AM (Amplitude)</option>
+                    <option value="USB">USB (Upper Sideband)</option>
+                    <option value="LSB">LSB (Lower Sideband)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="audio-enable" style="width: auto; margin-right: 8px;">
+                    Enable Audio Output
+                </label>
+                <div id="audio-status" style="margin-top: 5px; font-size: 0.85rem; color: gray;">
+                    Audio: Disabled
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="squelch">Squelch (dB): <span id="squelch-value">-50</span></label>
+                <input type="range" id="squelch" min="-100" max="0" value="-50" step="1">
+            </div>
+            
+            <div class="control-group">
+                <label for="rf-gain">RF Gain (dB): <span id="rf-gain-value">40</span></label>
+                <input type="range" id="rf-gain" min="0" max="50" value="40" step="1">
+            </div>
+            
+            <div class="control-group">
+                <label for="colormap">Colormap</label>
+                <select id="colormap">
+                    <option value="viridis" selected>Viridis</option>
+                    <option value="plasma">Plasma</option>
+                    <option value="inferno">Inferno</option>
+                    <option value="magma">Magma</option>
+                    <option value="hot">Hot</option>
+                    <option value="cool">Cool</option>
+                    <option value="rainbow">Rainbow</option>
+                    <option value="grayscale">Grayscale</option>
+                    <option value="turbo">Turbo</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="min-db">Min dB</label>
+                <input type="number" id="min-db" value="-80" min="-120" max="-10" step="5">
+            </div>
+            
+            <div class="control-group">
+                <label for="max-db">Max dB</label>
+                <input type="number" id="max-db" value="0" min="-10" max="20" step="5">
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="peak-hold" style="width: auto; margin-right: 8px;">
+                    Peak Hold
+                </label>
+            </div>
+            
             <div class="button-group">
                 <button id="start-btn" class="btn-start" onclick="startAcquisition()">▶ Start</button>
                 <button id="stop-btn" class="btn-stop" onclick="stopAcquisition()">⏸ Stop</button>
@@ -362,6 +424,52 @@
         // Initialize Socket.IO connection
         const socket = io();
         
+        // Initialize Web Audio API for audio playback
+        let audioContext = null;
+        let audioQueue = [];
+        let isPlayingAudio = false;
+        
+        function initAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+        
+        // Handle incoming audio data
+        socket.on('audio_data', function(data) {
+            if (!initAudioContext()) return;
+            
+            try {
+                // Decode base64 audio data
+                const audioData = atob(data.data);
+                const audioArray = new Float32Array(audioData.length / 4);
+                
+                // Convert bytes to float32 array
+                const dataView = new DataView(new ArrayBuffer(audioData.length));
+                for (let i = 0; i < audioData.length; i++) {
+                    dataView.setUint8(i, audioData.charCodeAt(i));
+                }
+                
+                for (let i = 0; i < audioArray.length; i++) {
+                    audioArray[i] = dataView.getFloat32(i * 4, true);
+                }
+                
+                // Create audio buffer
+                const audioBuffer = audioContext.createBuffer(1, audioArray.length, data.sample_rate);
+                audioBuffer.getChannelData(0).set(audioArray);
+                
+                // Create buffer source and play
+                const source = audioContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(audioContext.destination);
+                source.start();
+                
+            } catch (err) {
+                console.error('Error playing audio:', err);
+            }
+        });
+        
         // Connection status
         socket.on('connect', function() {
             document.getElementById('connection-status').textContent = 'Connected';
@@ -408,6 +516,51 @@
         
         document.getElementById('fft-size').addEventListener('change', function() {
             socket.emit('set_fft_size', { size: this.value });
+        });
+        
+        document.getElementById('modulation').addEventListener('change', function() {
+            socket.emit('set_modulation', { mode: this.value });
+        });
+        
+        document.getElementById('audio-enable').addEventListener('change', function() {
+            socket.emit('set_audio_enable', { enabled: this.checked });
+        });
+        
+        document.getElementById('squelch').addEventListener('input', function() {
+            document.getElementById('squelch-value').textContent = this.value;
+            socket.emit('set_squelch', { threshold: parseFloat(this.value) });
+        });
+        
+        document.getElementById('rf-gain').addEventListener('input', function() {
+            document.getElementById('rf-gain-value').textContent = this.value;
+            socket.emit('set_rf_gain', { gain: parseFloat(this.value) });
+        });
+        
+        document.getElementById('colormap').addEventListener('change', function() {
+            socket.emit('set_colormap', { colormap: this.value });
+        });
+        
+        document.getElementById('min-db').addEventListener('change', function() {
+            const minDb = parseFloat(this.value);
+            const maxDb = parseFloat(document.getElementById('max-db').value);
+            socket.emit('set_waterfall_range', { min_db: minDb, max_db: maxDb });
+        });
+        
+        document.getElementById('max-db').addEventListener('change', function() {
+            const minDb = parseFloat(document.getElementById('min-db').value);
+            const maxDb = parseFloat(this.value);
+            socket.emit('set_waterfall_range', { min_db: minDb, max_db: maxDb });
+        });
+        
+        document.getElementById('peak-hold').addEventListener('change', function() {
+            socket.emit('set_peak_hold', { enabled: this.checked });
+        });
+        
+        // Audio status updates
+        socket.on('audio_status', function(data) {
+            const status = document.getElementById('audio-status');
+            status.textContent = data.message;
+            status.style.color = data.color || 'gray';
         });
         
         // Check device status

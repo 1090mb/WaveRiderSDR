@@ -13,3 +13,8 @@ python-socketio>=5.9.0
 
 # SDR hardware support (optional)
 pyrtlsdr>=0.2.9
+
+# Audio output support (optional - for audio demodulation and playback)
+# Install at least one of these for audio playback:
+sounddevice>=0.4.6  # Recommended for most platforms
+# pyaudio>=0.2.13  # Alternative audio library (uncomment if preferred)
