@@ -368,9 +368,7 @@ def print_completion():
     
     print()
     print(f"{Colors.GREEN}{'=' * 55}{Colors.RESET}")
-    print(f"{Colors.GREEN}{Colors.RESET}")
     print(f"{Colors.GREEN}   Build completed successfully!{Colors.RESET}")
-    print(f"{Colors.GREEN}{Colors.RESET}")
     print(f"{Colors.GREEN}{'=' * 55}{Colors.RESET}")
     print()
     print(f"{Colors.CYAN}Build Output:{Colors.RESET}")
