@@ -369,7 +369,7 @@ def print_completion():
     print()
     print(f"{Colors.GREEN}╔═══════════════════════════════════════════════════╗{Colors.RESET}")
     print(f"{Colors.GREEN}║                                                   ║{Colors.RESET}")
-    print(f"{Colors.GREEN}║      {SYMBOLS['success']} Build completed successfully!             ║{Colors.RESET}")
+    print(f"{Colors.GREEN}║   Build completed successfully!                   ║{Colors.RESET}")
     print(f"{Colors.GREEN}║                                                   ║{Colors.RESET}")
     print(f"{Colors.GREEN}╚═══════════════════════════════════════════════════╝{Colors.RESET}")
     print()
