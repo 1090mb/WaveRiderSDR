@@ -10,6 +10,18 @@ import subprocess
 import shutil
 from pathlib import Path
 
+# Configure UTF-8 encoding for Windows
+if sys.platform == "win32":
+    import io
+    # Reconfigure stdout and stderr to use UTF-8 encoding
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(encoding='utf-8')
+        sys.stderr.reconfigure(encoding='utf-8')
+    else:
+        # Fallback for older Python versions
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
 # Color codes for terminal output
 class Colors:
     BLUE = '\033[94m'
