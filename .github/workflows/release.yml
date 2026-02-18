@@ -58,6 +58,7 @@ jobs:
 
       - name: Build executable
         run: python build.py
+        continue-on-error: false
 
       - name: Create archive
         run: |
@@ -89,6 +90,7 @@ jobs:
 
       - name: Build executable
         run: python build.py
+        continue-on-error: false
 
       - name: Create archive
         run: |
@@ -172,8 +174,8 @@ jobs:
         if: github.event_name == 'workflow_dispatch'
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: manual-${{ github.sha }}
-          name: Manual Build ${{ github.sha }}
+          tag_name: manual-build-${{ github.run_number }}
+          name: Manual Build #${{ github.run_number }}
           files: |
             ./artifacts/WaveRiderSDR-Windows.zip
             ./artifacts/WaveRiderSDR-macOS.zip
